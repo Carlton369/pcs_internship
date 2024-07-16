@@ -234,7 +234,7 @@ data = {
     'Number of Reviews': df.groupby('Category')['Reviews'].sum()
     }
 
-st.write(data)
+
 cat_df = pd.DataFrame(data).reset_index()
 cat_df.columns = ['Category'] + list(data.keys())
 
@@ -251,7 +251,8 @@ tab_selection = st.sidebar.radio(
      'Scatter Plot',
      'Reviews',
      'Multivariate',
-     'Two Charts'])
+     'Two Charts',
+     'Check DFs'])
 
 
 if tab_selection == 'Analysis of Rating Frequency':
@@ -279,3 +280,6 @@ elif tab_selection == 'Multivariate':
     mv.display_results(df)
 elif tab_selection == 'Two Charts':
     cr.top_n_barchart_2(df)
+elif tab_selection == 'Check DFs':
+    st.write(df)
+    st.write(cat_df)
