@@ -71,27 +71,33 @@ def plot_multivariate(df):
 # Display the chart
 def display_results(df):
     # Display the results
-    st.write("Average Rating by Category:")
-    avg_rating = df.groupby("Category")["Rating"].mean().reset_index()
-    avg_rating = avg_rating.sort_values(by="Rating", ascending=False)
-    st.write(avg_rating)
 
-    st.write("\nAverage Reviews by Category:")
-    avg_reviews = df.groupby("Category")["Reviews"].mean().reset_index()
-    avg_reviews = avg_reviews.sort_values(by="Reviews", ascending=False)
-    st.write(avg_reviews)
+    col1, col2, col3 = st.columns(3)
 
-    st.write("\nAverage Size by Category:")
-    avg_size = df.groupby("Category")["Size"].mean().reset_index()
-    avg_size = avg_size.sort_values(by="Size", ascending=False)
-    st.write(avg_size)
+    with col1:
+        st.write("Average Rating by Category:")
+        avg_rating = df.groupby("Category")["Rating"].mean().reset_index()
+        avg_rating = avg_rating.sort_values(by="Rating", ascending=False)
+        st.write(avg_rating)
 
-    st.write("\nAverage Installs by Category:")
-    avg_installs = df.groupby("Category")["Installs"].mean().reset_index()
-    avg_installs = avg_installs.sort_values(by="Installs", ascending=False)
-    st.write(avg_installs)
+        st.write("\nAverage Reviews by Category:")
+        avg_reviews = df.groupby("Category")["Reviews"].mean().reset_index()
+        avg_reviews = avg_reviews.sort_values(by="Reviews", ascending=False)
+        st.write(avg_reviews)
+    
+    with col2:
+        st.write("\nAverage Size by Category:")
+        avg_size = df.groupby("Category")["Size"].mean().reset_index()
+        avg_size = avg_size.sort_values(by="Size", ascending=False)
+        st.write(avg_size)
 
-    st.write("\nAverage Price by Category:")
-    avg_price = df.groupby("Category")["Price"].mean().reset_index()
-    avg_price = avg_price.sort_values(by="Price", ascending=False)
-    st.write(avg_price)
+        st.write("\nAverage Installs by Category:")
+        avg_installs = df.groupby("Category")["Installs"].mean().reset_index()
+        avg_installs = avg_installs.sort_values(by="Installs", ascending=False)
+        st.write(avg_installs)
+
+    with col3:
+        st.write("\nAverage Price by Category:")
+        avg_price = df.groupby("Category")["Price"].mean().reset_index()
+        avg_price = avg_price.sort_values(by="Price", ascending=False)
+        st.write(avg_price)
