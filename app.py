@@ -240,19 +240,18 @@ cat_df.columns = ['Category'] + list(data.keys())
 
 # Create tabs for different visualizations
 
+st.sidebar.image("pcss.png")
 col1,col2=st.sidebar.columns(2)
 with col1:
     st.image('steve_photo.jpg')
 with col2:
     st.image('reynard_photo.jpg')
+
 tab_selection = st.sidebar.radio(
     'Select Visualization', 
-    ['Analysis of Rating Frequency',
-     'Distribution of Installs across Categories',
-     'Comparison between Categories',
+    ['Distribution of Installs across Categories',
      'Bubble Plot',
      'Box Plot',
-     'Compatibility',
      'Scatter Plot',
      'Reviews',
      'Multivariate',
@@ -260,22 +259,22 @@ tab_selection = st.sidebar.radio(
      'Check DFs'])
 
 
-if tab_selection == 'Analysis of Rating Frequency':
-    st.header('Analysis of Rating Frequency')
-    linegraph(df)
-elif tab_selection == 'Distribution of Installs across Categories':
+#if tab_selection == 'Analysis of Rating Frequency':
+#    st.header('Analysis of Rating Frequency')
+#    linegraph(df)
+if tab_selection == 'Distribution of Installs across Categories':
     st.header('Distribution of Installs across Categories')
     piechart(df)
-elif tab_selection == 'Comparison between Categories':
-    st.header('Comparison between Categories')
-    top_n_barchart(cat_df)
+#elif tab_selection == 'Comparison between Categories':
+#   st.header('Comparison between Categories')
+#  top_n_barchart(cat_df)
 elif tab_selection == 'Bubble Plot':
     st.header('Bubble Plot')
     bubble_plot(cat_df)
 elif tab_selection == 'Box Plot':
     box_plot(df)
-elif tab_selection == 'Compatibility':
-    compat_plot(df)
+#elif tab_selection == 'Compatibility':
+#    compat_plot(df)
 elif tab_selection == 'Scatter Plot':
     sc.scatter_plot(df,rev_df)
 elif tab_selection == 'Reviews':
