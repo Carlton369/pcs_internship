@@ -6,10 +6,9 @@ import re
 import plotly.express as px
 import plotly.graph_objects as go
 
-st.set_page_config(page_title="yeet",page_icon="chart_with_upwards_trend", layout="wide", initial_sidebar_state="auto", menu_items=None)
+st.set_page_config(page_title="PCSS",page_icon="chart_with_upwards_trend", layout="wide", initial_sidebar_state="auto", menu_items=None)
 
 #importing functions from other files 
-
 import charts as cr
 import reviews as rv
 import multivariable as mv
@@ -147,7 +146,7 @@ def bubble_plot(cat_df):
         sizemin=5,  # minimum size of the bubbles
         sizeref=2.*max(cat_df['Average Rating'])/(30.**2),  # scale factor for the bubble sizes
         color=cat_df['Average Rating'],  # color by average rating
-        colorscale='Viridis',  # set color scale to Viridis
+        colorscale='bupu',  # set color scale to Viridis
         showscale=True,  # show color bar
     ),
     hovertemplate="<br>".join([
@@ -163,14 +162,23 @@ def bubble_plot(cat_df):
         autosize=False,
         width=1000, 
         height=700,  
+        xaxis_title='Average Size (MB)',
+        yaxis_title='Total Installs (M)'
     )
         
 
     st.plotly_chart(fig)
 
 def box_plot(df):
-    selected_variables = st.multiselect('Select variables', df['Category'].unique(),default='ART_AND_DESIGN')
+    cats = df['Category'].unique()
+    selected_variables = st.multiselect('Select variables', cats,default='ART_AND_DESIGN')
+    all_check = st.checkbox("Select ALL")
+
+    if all_check:
+        selected_variables = cats
+   
     filtered_df = df[df['Category'].isin(selected_variables)]
+
     Q1 = np.percentile(filtered_df['Rating'], 25)
     Q3 = np.percentile(filtered_df['Rating'], 75)
     IQR = Q3 - Q1
@@ -185,7 +193,7 @@ def box_plot(df):
     title="Rating Distribution by Category",
     width=400,
     height=600
-)
+    )
     # Display the chart 
     st.altair_chart(chart, use_container_width=True)
 
@@ -259,22 +267,14 @@ tab_selection = st.sidebar.radio(
      'Check DFs'])
 
 
-#if tab_selection == 'Analysis of Rating Frequency':
-#    st.header('Analysis of Rating Frequency')
-#    linegraph(df)
 if tab_selection == 'Distribution of Installs across Categories':
     st.header('Distribution of Installs across Categories')
     piechart(df)
-#elif tab_selection == 'Comparison between Categories':
-#   st.header('Comparison between Categories')
-#  top_n_barchart(cat_df)
 elif tab_selection == 'Bubble Plot':
     st.header('Bubble Plot')
     bubble_plot(cat_df)
 elif tab_selection == 'Box Plot':
     box_plot(df)
-#elif tab_selection == 'Compatibility':
-#    compat_plot(df)
 elif tab_selection == 'Scatter Plot':
     sc.scatter_plot(df,rev_df)
 elif tab_selection == 'Reviews':
@@ -283,7 +283,9 @@ elif tab_selection == 'Multivariate':
     mv.plot_multivariate(df)
     mv.display_results(df)
 elif tab_selection == 'Two Charts':
-    cr.top_n_barchart_2(df)
+    init_slider()
+    top_n = st.session_state.slider_value
+    cr.top_n_barchart_2(df,top_n)
 elif tab_selection == 'Check DFs':
     st.write(df)
     st.write(cat_df)

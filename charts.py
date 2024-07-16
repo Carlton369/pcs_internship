@@ -48,12 +48,9 @@ def convert_price_to_numeric(price):
 
 #df['Price'] = df['Price'].apply(convert_price_to_numeric)
 
-def top_n_barchart_2(df) -> None:
+def top_n_barchart_2(df,top_n) -> None:
 
     st.title("Comparison between 2 variables")
-
-    top_n_options = [i for i in range (1,34)]
-    top_n = st.selectbox('Select the number of top categories:', top_n_options)
 
     # Group the data by Category and calculate the average of the chosen variables
     # category_avg1 = df.groupby('Category')[var1].mean().reset_index(name=f'Average {var1}')
