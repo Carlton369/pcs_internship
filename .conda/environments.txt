@@ -1,0 +1,2 @@
+C:\Users\Admin\anaconda3
+C:\Users\Admin\anaconda3\envs\streamlitenv
