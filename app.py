@@ -169,17 +169,17 @@ def bubble_plot(cat_df):
     st.plotly_chart(fig)
 
 def box_plot(df):
-    selected_variables = st.multiselect('Select variables', df['Category'].unique())
+    selected_variables = st.multiselect('Select variables', df['Category'].unique(),default='ART_AND_DESIGN')
     filtered_df = df[df['Category'].isin(selected_variables)]
-    #Q1 = np.percentile(filtered_df, 25)
-    #Q3 = np.percentile(filtered_df, 75)
-    #IQR = Q3 - Q1
-    #lower_bound = Q1 - 1.5 * IQR
-    #upper_bound = Q3 - 1.5 * IQR
+    Q1 = np.percentile(filtered_df['Rating'], 25)
+    Q3 = np.percentile(filtered_df['Rating'], 75)
+    IQR = Q3 - Q1
+    lower_bound = Q1 - 1.5 * IQR
+    upper_bound = Q3 + 1.5 * IQR
     # Create the boxplot
     chart = alt.Chart(filtered_df).mark_boxplot(color='#3B7EEB', clip = True).encode(
         x='Category:N',
-        y=alt.Y('Rating:Q') #,scale=alt.Scale(domain=[lower_bound,upper_bound]))
+        y=alt.Y('Rating:Q',scale=alt.Scale(domain=[lower_bound,upper_bound]))
     )
     chart = chart.properties(
     title="Rating Distribution by Category",
