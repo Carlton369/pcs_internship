@@ -51,97 +51,65 @@ def convert_price_to_numeric(price):
 def top_n_barchart_2(df,top_n) -> None:
 
     st.markdown('<h2 style="font-size:24px;"> Comparison between 2 selected variables </h2>',unsafe_allow_html=True )
-
-    # Group the data by Category and calculate the average of the chosen variables
-    # category_avg1 = df.groupby('Category')[var1].mean().reset_index(name=f'Average {var1}')
-    # category_avg2 = df.groupby('Category')[var2].mean().reset_index(name=f'Average {var2}')
-
-    # Sort the categories by average in descending order and get the top N
-    # top_categories1 = category_avg1.sort_values(f'Average {var1}', ascending=False).head(top_n)
-    # top_categories2 = category_avg2.sort_values(f'Average {var2}', ascending=False).head(top_n)
-
-    # Create the bar charts
-    # bar_chart1 = alt.Chart(top_categories1).mark_bar().encode(
-    #     x=alt.X('Category:N', 
-    #         axis=alt.Axis(
-    #             labelAngle=80,
-    #             labelFontSize=10
-    #         ),
-    #         sort='-y'  # Sort the categories in descending order
-    #     ),
-    #     y=alt.Y(f'Average {var1}:Q', title=f'Average {var1}' + (' (GB)' if var1 == 'Size' else '')),
-    #     #scale=alt.Scale(domain=[top_categories1[f'Average {var1}'].min(), top_categories1[f'Average {var1}'].max()]))),
-    #     color=alt.Color('Category:N', scale=alt.Scale(scheme='category20'))
-    # ).properties(
-    #     title=f'Top {top_n} Categories by Average {var1}',
-    #     width=1000,
-    #     height=500
-    #     )
-
-    # bar_chart2 = alt.Chart(top_categories2).mark_bar().encode(
-    #     x=alt.X('Category:N', 
-    #         axis=alt.Axis(
-    #             labelAngle=80,
-    #             labelFontSize=10
-    #         ),
-    #         sort='-y'  # Sort the categories in descending order
-    #     ),
-    #     y=alt.Y(f'Average {var2}:Q', title=f'Average {var2}' + (' (GB)' if var2 == 'Size' else '')),
-    #     #scale=alt.Scale(domain=[top_categories2[f'Average {var2}'].min(), top_categories2[f'Average {var2}'].max()]))),
-    #     color=alt.Color('Category:N', scale=alt.Scale(scheme='category20'))
-    # ).properties(
-    #     title=f'Top {top_n} Categories by Average {var2}',
-    #     width=1000,
-    #     height
+    if 'selected_var1' not in st.session_state:
+        st.session_state.selected_var1 = None
+    if 'selected_var2' not in st.session_state:
+        st.session_state.selected_var2 = None
 
 
+    keys_list =  list(category_cols.keys())
     # Display the charts in Streamlit
     col1, col2 = st.columns(2)
     with col1:
-        var1 = st.selectbox("Select the variable 1", list(category_cols.keys()), key="var1")
-        category_avg1 = df.groupby('Category')[var1].mean().reset_index(name=f'Average {var1}')
-        top_categories1 = category_avg1.sort_values(f'Average {var1}', ascending=False).head(top_n)
+        var2 = st.session_state.selected_var2
+        available_keys_var1 = [key for key in keys_list if key != var2]
+        var1 = st.selectbox("Select the variable 1", available_keys_var1, key="var1", on_change=lambda: st.session_state.update({"selected_var1": st.session_state.var1}))
 
-        bar_chart1 = alt.Chart(top_categories1).mark_bar().encode(
-        x=alt.X('Category:N', 
-                axis=alt.Axis(
-                    labelAngle=80,
-                    labelFontSize=10
-                ),
-                sort='-y'  # Sort the categories in descending order
-            ),
-        y=alt.Y(f'Average {var1}:Q', title=f'Average {var1}' + (' (GB)' if var1 == 'Size' else '')),
-            #scale=alt.Scale(domain=[top_categories1[f'Average {var1}'].min(), top_categories1[f'Average {var1}'].max()])),
-            color=alt.Color('Category:N', scale=alt.Scale(scheme='category20'))
-        ).properties(
-            title=f'Top {top_n} Categories by Average {var1}',
-            width=1000,
-            height=500
-        )
+        if var1:
+            category_avg1 = df.groupby('Category')[var1].mean().reset_index(name=f'Average {var1}')
+            top_categories1 = category_avg1.sort_values(f'Average {var1}', ascending=False).head(top_n)
 
-        st.altair_chart(bar_chart1, use_container_width=True)
+            bar_chart1 = alt.Chart(top_categories1).mark_bar().encode(
+                x=alt.X('Category:N', 
+                        axis=alt.Axis(
+                            labelAngle=280,
+                            labelFontSize=8
+                        ),
+                        sort='-y'  # Sort the categories in descending order
+                    ),
+                y=alt.Y(f'Average {var1}:Q', title=f'Average {var1}' + (' (GB)' if var1 == 'Size' else '')),
+                color=alt.Color('Category:N', scale=alt.Scale(scheme='category20'))
+            ).properties(
+                title=f'Top {top_n} Categories by Average {var1}',
+                width=1000,
+                height=500
+            )
+
+            st.altair_chart(bar_chart1, use_container_width=True)
+
     with col2:
-        var2 = st.selectbox("Select the variable 2", list(category_cols.keys()), key="var2")
-        category_avg2 = df.groupby('Category')[var2].mean().reset_index(name=f'Average {var2}')
-        top_categories2 = category_avg2.sort_values(f'Average {var2}', ascending=False).head(top_n)
+        var1 = st.session_state.selected_var1
+        available_keys_var2 = [key for key in keys_list if key != var1]
+        var2 = st.selectbox("Select the variable 2", available_keys_var2, index = 1,key="var2", on_change=lambda: st.session_state.update({"selected_var2": st.session_state.var2}))
 
-        bar_chart2 = alt.Chart(top_categories2).mark_bar().encode(
-        x=alt.X('Category:N', 
-            axis=alt.Axis(
-                labelAngle=80,
-                labelFontSize=10
-            ),
-            sort='-y'  # Sort the categories in descending order
-        ),
-        y=alt.Y(f'Average {var2}:Q', title=f'Average {var2}' + (' (GB)' if var2 == 'Size' else '')),
-            #scale=alt.Scale(domain=[top_categories2[f'Average {var2}'].min(), top_categories2[f'Average {var2}'].max()])),
-            color=alt.Color('Category:N', scale=alt.Scale(scheme='category20'))
-        ).properties(
-            title=f'Top {top_n} Categories by Average {var2}',
-            width=1000,
-            height=500
-        )
-        
+        if var2:
+            category_avg2 = df.groupby('Category')[var2].mean().reset_index(name=f'Average {var2}')
+            top_categories2 = category_avg2.sort_values(f'Average {var2}', ascending=False).head(top_n)
 
-        st.altair_chart(bar_chart2, use_container_width=True)
+            bar_chart2 = alt.Chart(top_categories2).mark_bar().encode(
+                x=alt.X('Category:N', 
+                        axis=alt.Axis(
+                            labelAngle=280,
+                            labelFontSize=8
+                        ),
+                        sort='-y'  # Sort the categories in descending order
+                    ),
+                y=alt.Y(f'Average {var2}:Q', title=f'Average {var2}' + (' (GB)' if var2 == 'Size' else '')),
+                color=alt.Color('Category:N', scale=alt.Scale(scheme='category20'))
+            ).properties(
+                title=f'Top {top_n} Categories by Average {var2}',
+                width=1000,
+                height=500
+            )
 
+            st.altair_chart(bar_chart2, use_container_width=True)
