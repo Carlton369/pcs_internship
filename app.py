@@ -168,22 +168,41 @@ def bubble_plot(cat_df):
 
 def box_plot(df):
     cats = df['Category'].unique()
-    selected_variables = st.multiselect('Select variables', cats,default='ART_AND_DESIGN')
     all_check = st.checkbox("Select ALL")
 
     if all_check:
-        selected_variables = cats
-   
+        selected_variables = st.multiselect('Select variables', cats, default=cats)
+    else:
+        selected_variables = st.multiselect('Select variables', cats, default=['ART_AND_DESIGN'])
+    
     filtered_df = df[df['Category'].isin(selected_variables)]
+    
+    sort_by = st.selectbox('Sort by', ['Upper Quartile','Median','Lower Quartile','Min Rating','Max Rating'])
 
-    Q1 = np.percentile(filtered_df['Rating'], 25)
-    Q3 = np.percentile(filtered_df['Rating'], 75)
-    IQR = Q3 - Q1
-    lower_bound = Q1 - 1.5 * IQR
-    upper_bound = Q3 + 1.5 * IQR
+    try:    
+        Q1 = np.percentile(filtered_df['Rating'], 25)
+        Q3 = np.percentile(filtered_df['Rating'], 75)
+        IQR = Q3 - Q1
+        lower_bound = Q1 - 1.5 * IQR
+        upper_bound = Q3 + 1.5 * IQR
+    except IndexError as e:
+        st.error(f"An error occurred, Please select a Category")
+        st.stop()
+
+    if sort_by == "Median":
+        sorted_categories = df.groupby('Category')['Rating'].median().sort_values(ascending=False).index.tolist()
+    elif sort_by == "Min":
+        sorted_categories = df.groupby('Category')['Rating'].min().sort_values(ascending=False).index.tolist()
+    elif sort_by == "Max":
+        sorted_categories = df.groupby('Category')['Rating'].max().sort_values(ascending=False).index.tolist()
+    elif sort_by == "Upper Quartile":
+        sorted_categories = df.groupby('Category')['Rating'].quantile(0.75).sort_values(ascending=False).index.tolist()
+    elif sort_by == "Lower Quartile":
+        sorted_categories = df.groupby('Category')['Rating'].quantile(0.25).sort_values(ascending=False).index.tolist()
+    
     # Create the boxplot
     chart = alt.Chart(filtered_df).mark_boxplot(color='#3B7EEB', clip = True).encode(
-        x='Category:N',
+        x=alt.X('Category:N',sort=sorted_categories),
         y=alt.Y('Rating:Q',scale=alt.Scale(domain=[lower_bound,upper_bound]))
     )
     chart = chart.properties(
@@ -263,10 +282,10 @@ tab_selection = st.sidebar.radio(
 
 
 if tab_selection == 'Comparison between Categories':
-    st.header("Comparison between Categories")
+    st.title("Comparison between Categories")
     tab1, tab2, tab3,tab4 , tab5 = st.tabs(["Pie", "Bubble", "Box", "Scatter", "Bar"])
     with tab1:
-        st.header('Distribution of Installs across Categories')
+        st.header('Distribution of Age Rating by Installs across Categories')
         init_slider('a')
          # Access the slider value
         current_slider_value = st.session_state.slider_value
