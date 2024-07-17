@@ -40,8 +40,7 @@ def convert_price_to_numeric(price):
 
 def plot_multivariate(df):
     # Display the header
-    st.title("Scatter graph")
-
+    st.markdown('<h2 style="font-size:24px;"> Scatter Graph </h2>',unsafe_allow_html=True )
     # Create a dictionary to map category names to their corresponding columns
     category_cols = {
         "Rating": "Rating",
@@ -102,7 +101,10 @@ def display_results(df):
 
     with col3:
         st.write("\nAverage Price by Category:")
-        avg_price = df.groupby("Category")["Price"].mean().reset_index()
+        avg_price = df[df["Price"] > 0].groupby("Category")["Price"].mean().reset_index()
+        avg_price["Price"] = avg_price["Price"].round(2)
         avg_price = avg_price.sort_values(by="Price", ascending=False).reset_index(drop=True)
         avg_price.index += 1
         st.write(avg_price)
+
+        

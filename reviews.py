@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 def rev_plot(data):
     # Create a Streamlit app
     st.title("Google Play Store User Reviews")
-    st.header("Select an application")
+    st.markdown('<h2 style="font-size:24px;"> Select an Application </h2>',unsafe_allow_html=True )
 
     # Get a list of unique applications
     apps = data["App"].unique()

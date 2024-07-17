@@ -285,13 +285,13 @@ if tab_selection == 'Comparison between Categories':
     st.title("Comparison between Categories")
     tab1, tab2, tab3,tab4 , tab5 = st.tabs(["Pie", "Bubble", "Box", "Scatter", "Bar"])
     with tab1:
-        st.header('Distribution of Age Rating by Installs across Categories')
+        st.markdown('<h2 style="font-size:24px;"> Distribution of Age Rating by Installs across Categories </h2>',unsafe_allow_html=True )
         init_slider('a')
          # Access the slider value
         current_slider_value = st.session_state.slider_value
         piechart(df, current_slider_value)
     with tab2:
-        st.header('Bubble Plot')
+        st.markdown('<h2 style="font-size:24px;"> Bubble </h2>',unsafe_allow_html=True )
         bubble_plot(cat_df)
     with tab3:
         box_plot(df)

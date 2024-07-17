@@ -50,7 +50,7 @@ def convert_price_to_numeric(price):
 
 def top_n_barchart_2(df,top_n) -> None:
 
-    st.title("Comparison between 2 variables")
+    st.markdown('<h2 style="font-size:24px;"> Comparison between 2 selected variables </h2>',unsafe_allow_html=True )
 
     # Group the data by Category and calculate the average of the chosen variables
     # category_avg1 = df.groupby('Category')[var1].mean().reset_index(name=f'Average {var1}')
