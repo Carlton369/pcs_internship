@@ -50,12 +50,32 @@ def rev_plot(data):
     negatives = data[data["Sentiment"] == "Negative"].groupby("App").size().reset_index(name="count")
     neutrals = data[data["Sentiment"] == "Neutral"].groupby("App").size().reset_index(name="count")
 
-    most_positives = positives.loc[positives["count"].idxmax()]
-    most_negatives = negatives.loc[negatives["count"].idxmax()]
-    most_neutrals = neutrals.loc[neutrals["count"].idxmax()]
+    total_reviews = data.groupby("App").size().reset_index(name="total_count")
+
+    positives = positives.merge(total_reviews, on="App")
+    negatives = negatives.merge(total_reviews, on="App")
+    neutrals = neutrals.merge(total_reviews, on="App")
+
+    positives["Percentage"] = (positives["count"] / positives["total_count"]) * 100
+    negatives["Percentage"] = (negatives["count"] / negatives["total_count"]) * 100
+    neutrals["Percentage"] = (neutrals["count"] / neutrals["total_count"]) * 100
+
+    most_positives = positives.nlargest(3, "Percentage")
+    most_negatives = negatives.nlargest(3, "Percentage")
+    most_neutrals = neutrals.nlargest(3, "Percentage")
 
     # Display the results
-    st.write("App with the most number of:")
-    st.write(f"  - Positives: {most_positives['App']} ({most_positives['count']})")
-    st.write(f"  - Negatives: {most_negatives['App']} ({most_negatives['count']})")
-    st.write(f"  - Neutrals: {most_neutrals['App']} ({most_neutrals['count']})")
+    st.write("Top 3 apps with the highest percentage of:")
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.write("Positives:")
+        for i, row in most_positives.iterrows():
+            st.write(f"    - {row['App']} ({int(round(row['Percentage']))}%)")
+    with col2:
+        st.write("Negatives:")
+        for i, row in most_negatives.iterrows():
+            st.write(f"    - {row['App']} ({int(round(row['Percentage']))}%)")
+    with col3:
+        st.write("Neutrals:")
+        for i, row in most_neutrals.iterrows():
+            st.write(f"    - {row['App']} ({int(round(row['Percentage']))}%)")
