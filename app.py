@@ -191,9 +191,9 @@ def box_plot(df):
 
     if sort_by == "Median":
         sorted_categories = df.groupby('Category')['Rating'].median().sort_values(ascending=False).index.tolist()
-    elif sort_by == "Min":
+    elif sort_by == "Min Rating":
         sorted_categories = df.groupby('Category')['Rating'].min().sort_values(ascending=False).index.tolist()
-    elif sort_by == "Max":
+    elif sort_by == "Max Rating":
         sorted_categories = df.groupby('Category')['Rating'].max().sort_values(ascending=False).index.tolist()
     elif sort_by == "Upper Quartile":
         sorted_categories = df.groupby('Category')['Rating'].quantile(0.75).sort_values(ascending=False).index.tolist()
@@ -278,7 +278,7 @@ tab_selection = st.sidebar.radio(
     ['Comparison between Categories',
      'Scatter Plot',
      'Reviews',
-     'Check DFs'])
+     'Result'])
 
 
 if tab_selection == 'Comparison between Categories':
@@ -297,7 +297,7 @@ if tab_selection == 'Comparison between Categories':
         box_plot(df)
     with tab4:
         mv.plot_multivariate(df)
-        mv.display_results(df)
+        
     with tab5:
         init_slider('b')
         top_n = st.session_state.slider_value
@@ -306,6 +306,5 @@ elif tab_selection == 'Scatter Plot':
     sc.scatter_plot(df,rev_df)
 elif tab_selection == 'Reviews':
     rv.rev_plot(rev_df)
-elif tab_selection == 'Check DFs':
-    st.write(df)
-    st.write(cat_df)
+elif tab_selection == 'Result':
+    mv.display_results(df)
