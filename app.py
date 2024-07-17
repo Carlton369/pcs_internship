@@ -135,8 +135,8 @@ def linegraph(df):
 
 def bubble_plot(cat_df):
     fig = go.Figure(data=[go.Scatter(
-    x=cat_df['Average Size (MB)'],
-    y=cat_df['Total Installs (M)'],
+    x= cat_df['Total Installs (M)'],
+    y= cat_df['Average Price'],
     mode='markers',
     marker=dict(
         size=cat_df['Average Rating'] - 3.9,
@@ -150,7 +150,7 @@ def bubble_plot(cat_df):
         "Category: %{customdata[0]}",
         "Average Rating: %{marker.size:.2f}",
         "Total Installs (M): %{y:.0f}",
-        "Average Size (MB): %{x:.2f}"
+        "Average Price: %{x:.2f}"
     ]) + "<extra></extra>",
     customdata=cat_df[['Category']]  # pass the Category column as custom data
     )])
@@ -159,7 +159,7 @@ def bubble_plot(cat_df):
         autosize=False,
         width=1000, 
         height=700,  
-        xaxis_title='Average Size (MB)',
+        xaxis_title='Average Price',
         yaxis_title='Total Installs (M)'
     )
         
@@ -255,7 +255,8 @@ data = {
     'Average Size (MB)': df.groupby('Category')['Size'].mean(),
     'Total Installs (M)': df.groupby('Category')['Installs'].sum()/1000000,
     'Number of Apps': df.groupby('Category').size(),
-    'Number of Reviews': df.groupby('Category')['Reviews'].sum()
+    'Number of Reviews': df.groupby('Category')['Reviews'].sum(),
+    'Average Price' : df[df["Price"] > 0].groupby("Category")["Price"].mean()
     }
 
 
@@ -265,20 +266,20 @@ cat_df.columns = ['Category'] + list(data.keys())
 # Create tabs for different visualizations
 
 st.sidebar.image("pcss.png")
-#col1,col2=st.sidebar.columns(2)
-#with col1:
-#    st.image('steve_photo.jpg')
-#    st.image('chairman_photo.jpg')
-#with col2:
-#    st.image('reynard_photo.jpg')
-#    st.image('reanne_photo.png')
+col1,col2=st.sidebar.columns(2)
+with col1:
+    st.image('steve_photo.jpg')
+    st.image('chairman_photo.jpg')
+with col2:
+    st.image('reynard_photo.jpg')
+    st.image('reanne_photo.png')
 
 tab_selection = st.sidebar.radio(
     'Select Visualization', 
     ['Comparison between Categories',
      'Scatter Plot',
      'Reviews',
-     'Result'])
+     'Summary'])
 
 
 if tab_selection == 'Comparison between Categories':
@@ -291,7 +292,7 @@ if tab_selection == 'Comparison between Categories':
         current_slider_value = st.session_state.slider_value
         piechart(df, current_slider_value)
     with tab2:
-        st.markdown('<h2 style="font-size:24px;"> Bubble </h2>',unsafe_allow_html=True )
+        st.markdown('<h2 style="font-size:24px;"> Average Price, Rating, and Total Installs per Category </h2>',unsafe_allow_html=True )
         bubble_plot(cat_df)
     with tab3:
         box_plot(df)
@@ -306,5 +307,6 @@ elif tab_selection == 'Scatter Plot':
     sc.scatter_plot(df,rev_df)
 elif tab_selection == 'Reviews':
     rv.rev_plot(rev_df)
-elif tab_selection == 'Result':
+elif tab_selection == 'Summary':
+    st.markdown('<h2 style="font-size:24px;"> By Category </h2>',unsafe_allow_html=True )
     mv.display_results(df)
