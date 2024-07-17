@@ -20,7 +20,7 @@ def decrement_slider_value():
 def increment_slider_value():
     st.session_state.slider_value += 1
 
-def init_slider():
+def init_slider(x):
     if 'slider_value' not in st.session_state:
         st.session_state.slider_value = 10
 
@@ -29,15 +29,15 @@ def init_slider():
 
     # Create the '-' button
     with col1:
-        st.button(':heavy_minus_sign:', on_click=decrement_slider_value)
+        st.button(':heavy_minus_sign:', key= "minus" + x, on_click=decrement_slider_value)
     
     # Create the slider bar
     with col2:
-        st.session_state.slider_value = st.slider('Select Value', 1, 33, value=st.session_state.slider_value)
+        st.session_state.slider_value = st.slider('Select Value', 1, 33, value=st.session_state.slider_value, key="bar" + x)
  
     # Create the '+' button
     with col3:
-        st.button(':heavy_plus_sign:', on_click=increment_slider_value)
+        st.button(':heavy_plus_sign:', key="plus" + x, on_click=increment_slider_value)
 
 def top_n_barchart(cat_df) -> None:
     """
@@ -95,10 +95,7 @@ def top_n_barchart(cat_df) -> None:
     # Display the chart in Streamlit
     st.plotly_chart(fig, use_container_width=True)
 
-def piechart(df):
-    init_slider()
-    # Access the slider value
-    current_slider_value = st.session_state.slider_value
+def piechart(df,current_slider_value):
 
     top_categories = df.groupby('Category')['Installs'].sum().nlargest(current_slider_value)
     top_categories_df = df[df['Category'].isin(top_categories.index)]
@@ -249,43 +246,47 @@ cat_df.columns = ['Category'] + list(data.keys())
 # Create tabs for different visualizations
 
 st.sidebar.image("pcss.png")
-col1,col2=st.sidebar.columns(2)
-with col1:
-    st.image('steve_photo.jpg')
-with col2:
-    st.image('reynard_photo.jpg')
+#col1,col2=st.sidebar.columns(2)
+#with col1:
+#    st.image('steve_photo.jpg')
+#    st.image('chairman_photo.jpg')
+#with col2:
+#    st.image('reynard_photo.jpg')
+#    st.image('reanne_photo.png')
 
 tab_selection = st.sidebar.radio(
     'Select Visualization', 
-    ['Distribution of Installs across Categories',
-     'Bubble Plot',
-     'Box Plot',
+    ['Comparison between Categories',
      'Scatter Plot',
      'Reviews',
-     'Multivariate',
-     'Two Charts',
      'Check DFs'])
 
 
-if tab_selection == 'Distribution of Installs across Categories':
-    st.header('Distribution of Installs across Categories')
-    piechart(df)
-elif tab_selection == 'Bubble Plot':
-    st.header('Bubble Plot')
-    bubble_plot(cat_df)
-elif tab_selection == 'Box Plot':
-    box_plot(df)
+if tab_selection == 'Comparison between Categories':
+    st.header("Comparison between Categories")
+    tab1, tab2, tab3,tab4 , tab5 = st.tabs(["Pie", "Bubble", "Box", "Scatter", "Bar"])
+    with tab1:
+        st.header('Distribution of Installs across Categories')
+        init_slider('a')
+         # Access the slider value
+        current_slider_value = st.session_state.slider_value
+        piechart(df, current_slider_value)
+    with tab2:
+        st.header('Bubble Plot')
+        bubble_plot(cat_df)
+    with tab3:
+        box_plot(df)
+    with tab4:
+        mv.plot_multivariate(df)
+        mv.display_results(df)
+    with tab5:
+        init_slider('b')
+        top_n = st.session_state.slider_value
+        cr.top_n_barchart_2(df,top_n)
 elif tab_selection == 'Scatter Plot':
     sc.scatter_plot(df,rev_df)
 elif tab_selection == 'Reviews':
     rv.rev_plot(rev_df)
-elif tab_selection == 'Multivariate':
-    mv.plot_multivariate(df)
-    mv.display_results(df)
-elif tab_selection == 'Two Charts':
-    init_slider()
-    top_n = st.session_state.slider_value
-    cr.top_n_barchart_2(df,top_n)
 elif tab_selection == 'Check DFs':
     st.write(df)
     st.write(cat_df)

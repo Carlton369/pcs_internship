@@ -99,5 +99,5 @@ def display_results(df):
     with col3:
         st.write("\nAverage Price by Category:")
         avg_price = df.groupby("Category")["Price"].mean().reset_index()
-        avg_price = avg_price.sort_values(by="Price", ascending=False)
+        avg_price = avg_price.sort_values(by="Price", ascending=False).reset_index()
         st.write(avg_price)
