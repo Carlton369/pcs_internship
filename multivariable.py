@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 import numpy as np
+import plotly.express as px
 
 # Convert the Installs column to a numeric type
 def convert_installs_to_numeric(installs):
@@ -69,47 +70,68 @@ def plot_multivariate(df):
 
 # Display the chart
 def display_results(df):
-    # Display the results
+     # Calculate the average values for each category
+    avg_rating = df.groupby("Category")["Rating"].mean().reset_index()
+    avg_rating = avg_rating.rename(columns={"Rating": "Average Rating"}).sort_values(by="Average Rating", ascending=False)
 
-    col1, col2, col3 = st.columns(3)
+    avg_size = df.groupby("Category")["Size"].mean().reset_index()
+    avg_size = avg_size.rename(columns={"Size": "Average Size"}).sort_values(by="Average Size", ascending=False)
 
-    with col1:
-        st.write("Average Rating:")
-        avg_rating = df.groupby("Category")["Rating"].mean().reset_index()
-        avg_rating = avg_rating.sort_values(by="Rating", ascending=False).reset_index(drop=True)
-        avg_rating.index += 1
+    avg_price = df[df["Price"] > 0].groupby("Category")["Price"].mean().reset_index()
+    avg_price["Price"] = avg_price["Price"].round(2)
+    avg_price = avg_price.rename(columns={"Price": "Average Price"}).sort_values(by="Average Price", ascending=False)
+
+    avg_reviews = df.groupby("Category")["Reviews"].mean().reset_index()
+    avg_reviews = avg_reviews.rename(columns={"Reviews": "Average Reviews"}).sort_values(by="Average Reviews", ascending=False)
+
+    avg_installs = df.groupby("Category")["Installs"].mean().reset_index()
+    avg_installs = avg_installs.rename(columns={"Installs": "Average Installs"}).sort_values(by="Average Installs", ascending=False)
+
+    # Create a selectbox for selecting the options
+    option = st.selectbox("Select an option", ["Average Rating", "Average Size", "Average Price", "Average Reviews", "Average Installs"])
+
+    if option == "Average Rating":
+        st.write("Average Rating by Category:")
         st.write(avg_rating)
+        st.write(f"Top category: {avg_rating.iloc[0]['Category']} with an average rating of {avg_rating.iloc[0]['Average Rating']:.2f}")
+        st.write(f"Bottom category: {avg_rating.iloc[-1]['Category']} with an average rating of {avg_rating.iloc[-1]['Average Rating']:.2f}")
 
-    
-    with col2:
-        st.write("\nAverage Size:")
-        avg_size = df.groupby("Category")["Size"].mean().reset_index()
-        avg_size = avg_size.sort_values(by="Size", ascending=False).reset_index(drop=True)
-        avg_size.index += 1
-        st.write(avg_size)
+    elif option == "Average Size":
+        fig = px.pie(avg_size, names="Category", values="Average Size")
+        fig.update_traces(hovertemplate="<br>".join([
+            "Category: %{label}<br>",
+            "Average Size: %{value:.2f} MB<br>"
+        ]))
+        st.plotly_chart(fig, use_container_width=True)
+        st.write(f"Largest category: {avg_size.iloc[0]['Category']} with an average size of {avg_size.iloc[0]['Average Size']:.2f} MB")
+        st.write(f"Smallest category: {avg_size.iloc[-1]['Category']} with an average size of {avg_size.iloc[-1]['Average Size']:.2f} MB")
 
+    elif option == "Average Price":
+        fig = px.pie(avg_price, names="Category", values="Average Price")
+        fig.update_traces(hovertemplate="<br>".join([
+            "Category: %{label}<br>",
+            "Average Price: $%{value:.2f}<br>"
+        ]))
+        st.plotly_chart(fig, use_container_width=True)
+        st.write(f"Most expensive category: {avg_price.iloc[0]['Category']} with an average price of ${avg_price.iloc[0]['Average Price']:.2f}")
+        st.write(f"Cheapest category: {avg_price.iloc[-1]['Category']} with an average price of ${avg_price.iloc[-1]['Average Price']:.2f}")
 
-    with col3:
-        st.write("\nAverage Price:")
-        avg_price = df[df["Price"] > 0].groupby("Category")["Price"].mean().reset_index()
-        avg_price["Price"] = avg_price["Price"].round(2)
-        avg_price = avg_price.sort_values(by="Price", ascending=False).reset_index(drop=True)
-        avg_price.index += 1
-        st.write(avg_price)
+    elif option == "Average Reviews":
+        fig = px.bar(avg_reviews, x="Category", y="Average Reviews", color="Average Reviews", color_continuous_scale="Viridis")
+        fig.update_traces(hovertemplate="<br>".join([
+            "Category: %{x}<br>",
+            "Average Reviews: %{y:.2f}<br>"
+        ]))
+        st.plotly_chart(fig, use_container_width=True)
+        st.write(f"Category with most reviews: {avg_reviews.iloc[0]['Category']} with an average of {avg_reviews.iloc[0]['Average Reviews']:.2f} reviews")
+        st.write(f"Category with least reviews: {avg_reviews.iloc[-1]['Category']} with an average of {avg_reviews.iloc[-1]['Average Reviews']:.2f} reviews")
 
-    
-    col4, col5 = st.columns(2)
-
-    with col4:
-        st.write("\nAverage Reviews:")
-        avg_reviews = df.groupby("Category")["Reviews"].mean().reset_index()
-        avg_reviews = avg_reviews.sort_values(by="Reviews", ascending=False).reset_index(drop=True)
-        avg_reviews.index += 1
-        st.write(avg_reviews)
-
-    with col5:
-        st.write("\nAverage Installs:")
-        avg_installs = df.groupby("Category")["Installs"].mean().reset_index()
-        avg_installs = avg_installs.sort_values(by="Installs", ascending=False).reset_index(drop=True)
-        avg_installs.index += 1
-        st.write(avg_installs)
+    elif option == "Average Installs":
+        fig = px.bar(avg_installs, x="Category", y="Average Installs", color="Average Installs", color_continuous_scale="Viridis")
+        fig.update_traces(hovertemplate="<br>".join([
+            "Category: %{x}<br>",
+            "Average Installs: %{y:.2f}<br>"
+        ]))
+        st.plotly_chart(fig, use_container_width=True)
+        st.write(f"Category with most installs: {avg_installs.iloc[0]['Category']} with an average of {avg_installs.iloc[0]['Average Installs']:.2f} installs")
+        st.write(f"Category with least installs: {avg_installs.iloc[-1]['Category']} with an average of {avg_installs.iloc[-1]['Average Installs']:.2f} installs")

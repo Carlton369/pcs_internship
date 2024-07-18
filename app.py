@@ -33,7 +33,7 @@ def init_slider(x):
     
     # Create the slider bar
     with col2:
-        st.session_state.slider_value = st.slider('Select Value', 1, 33, value=st.session_state.slider_value, key="bar" + x)
+        st.session_state.slider_value = st.slider('Select the number of Categories', 1, 33, value=st.session_state.slider_value, key="bar" + x)
  
     # Create the '+' button
     with col3:
@@ -277,10 +277,9 @@ with col2:
 tab_selection = st.sidebar.radio(
     'Select Visualization', 
     ['Comparison between Categories',
-     'Scatter Plot',
+     'Rating vs Sentiment Analysis',
      'Reviews',
      'Summary'])
-
 
 if tab_selection == 'Comparison between Categories':
     st.title("Comparison between Categories")
@@ -303,10 +302,13 @@ if tab_selection == 'Comparison between Categories':
         init_slider('b')
         top_n = st.session_state.slider_value
         cr.top_n_barchart_2(df,top_n)
-elif tab_selection == 'Scatter Plot':
+
+elif tab_selection == 'Rating vs Sentiment Analysis':
     sc.scatter_plot(df,rev_df)
 elif tab_selection == 'Reviews':
     rv.rev_plot(rev_df)
 elif tab_selection == 'Summary':
     st.markdown('<h2 style="font-size:24px;"> By Category </h2>',unsafe_allow_html=True )
     mv.display_results(df)
+    st.write(cat_df)
+    #heatmap for rating(?)s
