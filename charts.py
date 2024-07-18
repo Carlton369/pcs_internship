@@ -11,7 +11,7 @@ category_cols = {
     "Installs": "Installs",
     "Price": "Price"
 }
-
+'''
 # Convert the Installs column to a numeric type
 def convert_installs_to_numeric(installs):
     try:
@@ -47,6 +47,7 @@ def convert_price_to_numeric(price):
     return float(price)
 
 #df['Price'] = df['Price'].apply(convert_price_to_numeric)
+'''
 
 def top_n_barchart_2(df,top_n) -> None:
 

@@ -13,6 +13,7 @@ import charts as cr
 import reviews as rv
 import multivariable as mv
 import scatter2 as sc
+import word_c as wc
 
 def decrement_slider_value():
     st.session_state.slider_value -= 1
@@ -101,8 +102,6 @@ def piechart(df,current_slider_value):
     top_categories_df = df[df['Category'].isin(top_categories.index)]
     
     # Aggregate installs per category
-    installs_per_category = top_categories_df.groupby('Category')['Installs'].sum().reset_index()
-
     fig = px.sunburst(top_categories_df, path=['Type', 'Category', 'Content Rating'], values='Installs', color='Content Rating',   color_discrete_sequence=px.colors.qualitative.Set2)
     
     fig.update_layout(width=800, height=600)  # adjust the size as needed
@@ -266,26 +265,28 @@ cat_df.columns = ['Category'] + list(data.keys())
 # Create tabs for different visualizations
 
 st.sidebar.image("pcss.png")
-col1,col2=st.sidebar.columns(2)
-with col1:
-    st.image('steve_photo.jpg')
-    st.image('chairman_photo.jpg')
-with col2:
-    st.image('reynard_photo.jpg')
-    st.image('reanne_photo.png')
 
 tab_selection = st.sidebar.radio(
     'Select Visualization', 
-    ['Comparison between Categories',
+    ['Overview',
+     'Comparison between Categories',
      'Rating vs Sentiment Analysis',
      'Reviews',
      'Summary'])
 
-if tab_selection == 'Comparison between Categories':
+if tab_selection == 'Overview':
+    st.subheader('Dataframe')
+    df.index += 1
+    st.write(df)
+    st.subheader('Statistics by Category')
+    cat_df.index += 1
+    st.write(cat_df)
+    
+elif tab_selection == 'Comparison between Categories':
     st.title("Comparison between Categories")
     tab1, tab2, tab3,tab4 , tab5 = st.tabs(["Pie", "Bubble", "Box", "Scatter", "Bar"])
     with tab1:
-        st.markdown('<h2 style="font-size:24px;"> Distribution of Age Rating by Installs across Categories </h2>',unsafe_allow_html=True )
+        st.markdown('<h2 style="font-size:24px;"> Distribution of Content Rating by Installs across Categories </h2>',unsafe_allow_html=True )
         init_slider('a')
          # Access the slider value
         current_slider_value = st.session_state.slider_value
@@ -305,10 +306,13 @@ if tab_selection == 'Comparison between Categories':
 
 elif tab_selection == 'Rating vs Sentiment Analysis':
     sc.scatter_plot(df,rev_df)
+    wc.plot_word_cloud(rev_df)
+
+
 elif tab_selection == 'Reviews':
     rv.rev_plot(rev_df)
 elif tab_selection == 'Summary':
     st.markdown('<h2 style="font-size:24px;"> By Category </h2>',unsafe_allow_html=True )
     mv.display_results(df)
-    st.write(cat_df)
+
     #heatmap for rating(?)s

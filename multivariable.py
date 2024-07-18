@@ -4,6 +4,7 @@ import altair as alt
 import numpy as np
 import plotly.express as px
 
+'''
 # Convert the Installs column to a numeric type
 def convert_installs_to_numeric(installs):
     try:
@@ -28,7 +29,7 @@ def convert_size_to_numeric(size):
         return float(size)
 
 #df['Size'] = df['Size'].apply(convert_size_to_numeric)
-
+'''
 # Convert the Price column to a numeric type
 def convert_price_to_numeric(price):
     if '$' in price:
@@ -38,6 +39,7 @@ def convert_price_to_numeric(price):
     return float(price)
 
 #df['Price'] = df['Price'].apply(convert_price_to_numeric)
+
 
 def plot_multivariate(df):
     # Display the header
@@ -72,20 +74,25 @@ def plot_multivariate(df):
 def display_results(df):
      # Calculate the average values for each category
     avg_rating = df.groupby("Category")["Rating"].mean().reset_index()
-    avg_rating = avg_rating.rename(columns={"Rating": "Average Rating"}).sort_values(by="Average Rating", ascending=False)
+    avg_rating = avg_rating.rename(columns={"Rating": "Average Rating"}).sort_values(by="Average Rating", ascending=False).reset_index(drop = True)
+
 
     avg_size = df.groupby("Category")["Size"].mean().reset_index()
-    avg_size = avg_size.rename(columns={"Size": "Average Size"}).sort_values(by="Average Size", ascending=False)
+    avg_size = avg_size.rename(columns={"Size": "Average Size"}).sort_values(by="Average Size", ascending=False).reset_index(drop = True)
+
 
     avg_price = df[df["Price"] > 0].groupby("Category")["Price"].mean().reset_index()
     avg_price["Price"] = avg_price["Price"].round(2)
-    avg_price = avg_price.rename(columns={"Price": "Average Price"}).sort_values(by="Average Price", ascending=False)
+    avg_price = avg_price.rename(columns={"Price": "Average Price"}).sort_values(by="Average Price", ascending=False).reset_index(drop = True)
+
 
     avg_reviews = df.groupby("Category")["Reviews"].mean().reset_index()
-    avg_reviews = avg_reviews.rename(columns={"Reviews": "Average Reviews"}).sort_values(by="Average Reviews", ascending=False)
+    avg_reviews = avg_reviews.rename(columns={"Reviews": "Average Reviews"}).sort_values(by="Average Reviews", ascending=False).reset_index(drop = True)
+
 
     avg_installs = df.groupby("Category")["Installs"].mean().reset_index()
-    avg_installs = avg_installs.rename(columns={"Installs": "Average Installs"}).sort_values(by="Average Installs", ascending=False)
+    avg_installs = avg_installs.rename(columns={"Installs": "Average Installs"}).sort_values(by="Average Installs", ascending=False).reset_index(drop = True)
+
 
     # Create a selectbox for selecting the options
     option = st.selectbox("Select an option", ["Average Rating", "Average Size", "Average Price", "Average Reviews", "Average Installs"])
