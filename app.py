@@ -40,62 +40,6 @@ def init_slider(x):
     with col3:
         st.button(':heavy_plus_sign:', key="plus" + x, on_click=increment_slider_value)
 
-def top_n_barchart(cat_df) -> None:
-    """
-    Visualize the top N categories by number of apps in a bar chart.
-    """
-    # Create Streamlit widgets
-    init_slider()
-    top_n = st.session_state.slider_value
-    # Group the data by Category and count the number of apps in each category
-
-    selected_variable = st.selectbox("Select variable", cat_df.columns[1:])
-    # Sort the categories by count in descending order and get the top N
-    top_categories = cat_df.sort_values(selected_variable, ascending=False).head(top_n)
-    var_min = min(top_categories[selected_variable])
-    var_max = max(top_categories[selected_variable])
-
-    # Create the bar chart
-    fig = px.bar(top_categories, x="Category", y=selected_variable, color="Category", 
-                category_orders={"Category": top_categories["Category"].tolist()}, 
-                title=f"Top {top_n} Categories by {selected_variable}")
-
-    # Customize the layout
-    fig.update_layout(
-        dragmode=False,
-        selectdirection = "h",
-        width=900,
-        height=600,
-        xaxis=dict(
-            title="Category",
-            tickangle=80,
-            tickfont=dict(size=12)
-        ),
-        yaxis=dict(
-            title=selected_variable,
-            range=[var_min - (var_min*0.01), var_max + (var_max*0.01)]
-        )
-    )
-
-    # Define the function to call when a bar is clicked
-   
-    if 'selected_category' not in st.session_state:
-        st.session_state.selected_category = None
-
-    def handle_click(trace, points, state):
-        if points.point_inds:
-            category = points.points[0].x
-            st.session_state.selected_category = category
-
-    fig.data[0].on_click(handle_click)
-
-    if st.session_state.selected_category:
-        #top_apps = get_top_apps(st.session_state.selected_category)
-        st.subheader(f"Top 10 apps in {st.session_state.selected_category}")
-        st.write(cat_df[selected_variable])
-    # Display the chart in Streamlit
-    st.plotly_chart(fig, use_container_width=True)
-
 def piechart(df,current_slider_value):
 
     top_categories = df.groupby('Category')['Installs'].sum().nlargest(current_slider_value)
@@ -107,30 +51,6 @@ def piechart(df,current_slider_value):
     fig.update_layout(width=800, height=600)  # adjust the size as needed
 
     st.plotly_chart(fig,use_container_width=True)
-
-def linegraph(df):
-    init_slider()
-    top_n = st.session_state.slider_value
-    # Calculate Rating Frequency by Category
-    rating_counts = df.groupby(['Category', 'Rating']).size().reset_index(name='Count')
-
-    # Step 2: Get top 10 categories by count
-    top_categories = df['Category'].value_counts().nlargest(top_n).index
-
-    # Filter rating_counts for top 10 categories
-    rating_counts = rating_counts[rating_counts['Category'].isin(top_categories)]
-
-    # Create Line Chart using Altair
-    line_chart = alt.Chart(rating_counts).mark_line().encode(
-        x='Rating:Q',
-        y='Count:Q',
-        color='Category:N',
-        tooltip=['Category:N', 'Rating:Q', 'Count:Q']
-    ).properties(
-        width=1000,
-        height=400,
-    )
-    st.altair_chart(line_chart)
 
 def bubble_plot(cat_df):
     fig = go.Figure(data=[go.Scatter(
@@ -212,14 +132,86 @@ def box_plot(df):
     # Display the chart 
     st.altair_chart(chart, use_container_width=True)
 
-def compat_plot(df):
-    df['Android Ver'] = df['Android Ver'].str[:3].replace('and up','')
-    df = df.dropna(subset=['Android Ver'])
-    df = df[~df['Android Ver'].str.contains('Var', na=False)]
-    df['Android Ver'] = df['Android Ver'].astype(float)
+# def top_n_barchart(cat_df) -> None:
+#     """
+#     Visualize the top N categories by number of apps in a bar chart.
+#     """
+#     # Create Streamlit widgets
+#     init_slider()
+#     top_n = st.session_state.slider_value
+#     # Group the data by Category and count the number of apps in each category
+
+#     selected_variable = st.selectbox("Select variable", cat_df.columns[1:])
+#     # Sort the categories by count in descending order and get the top N
+#     top_categories = cat_df.sort_values(selected_variable, ascending=False).head(top_n)
+#     var_min = min(top_categories[selected_variable])
+#     var_max = max(top_categories[selected_variable])
+
+#     # Create the bar chart
+#     fig = px.bar(top_categories, x="Category", y=selected_variable, color="Category", 
+#                 category_orders={"Category": top_categories["Category"].tolist()}, 
+#                 title=f"Top {top_n} Categories by {selected_variable}")
+
+#     # Customize the layout
+#     fig.update_layout(
+#         dragmode=False,
+#         selectdirection = "h",
+#         width=900,
+#         height=600,
+#         xaxis=dict(
+#             title="Category",
+#             tickangle=80,
+#             tickfont=dict(size=12)
+#         ),
+#         yaxis=dict(
+#             title=selected_variable,
+#             range=[var_min - (var_min*0.01), var_max + (var_max*0.01)]
+#         )
+#     )
+
+#     # Define the function to call when a bar is clicked
    
-    fig = px.scatter(df,x="Android Ver", y="Installs")
-    st.plotly_chart(fig, use_container_width=True)
+#     if 'selected_category' not in st.session_state:
+#         st.session_state.selected_category = None
+
+#     def handle_click(trace, points, state):
+#         if points.point_inds:
+#             category = points.points[0].x
+#             st.session_state.selected_category = category
+
+#     fig.data[0].on_click(handle_click)
+
+#     if st.session_state.selected_category:
+#         #top_apps = get_top_apps(st.session_state.selected_category)
+#         st.subheader(f"Top 10 apps in {st.session_state.selected_category}")
+#         st.write(cat_df[selected_variable])
+#     # Display the chart in Streamlit
+#     st.plotly_chart(fig, use_container_width=True)
+
+# def linegraph(df):
+#     init_slider()
+#     top_n = st.session_state.slider_value
+#     # Calculate Rating Frequency by Category
+#     rating_counts = df.groupby(['Category', 'Rating']).size().reset_index(name='Count')
+
+#     # Step 2: Get top 10 categories by count
+#     top_categories = df['Category'].value_counts().nlargest(top_n).index
+
+#     # Filter rating_counts for top 10 categories
+#     rating_counts = rating_counts[rating_counts['Category'].isin(top_categories)]
+
+#     # Create Line Chart using Altair
+#     line_chart = alt.Chart(rating_counts).mark_line().encode(
+#         x='Rating:Q',
+#         y='Count:Q',
+#         color='Category:N',
+#         tooltip=['Category:N', 'Rating:Q', 'Count:Q']
+#     ).properties(
+#         width=1000,
+#         height=400,
+#     )
+#     st.altair_chart(line_chart)
+
 
 # read in the data
 df = pd.read_csv('googleplaystore.csv')
@@ -258,7 +250,6 @@ data = {
     'Average Price' : df[df["Price"] > 0].groupby("Category")["Price"].mean()
     }
 
-
 cat_df = pd.DataFrame(data).reset_index()
 cat_df.columns = ['Category'] + list(data.keys())
 
@@ -270,45 +261,88 @@ tab_selection = st.sidebar.radio(
     'Select Visualization', 
     ['Overview',
      'Comparison between Categories',
-     'Rating vs Sentiment Analysis',
+     'Sentiment Analysis',
      'Reviews',
      'Summary'])
 
 if tab_selection == 'Overview':
-    st.subheader('Dataframe')
+    st.subheader('Overview of Data')
     df.index += 1
     st.write(df)
+    col1,col2,col3 = st.columns(3)
+    # Custom CSS to draw a box around st.metric
+
+    import streamlit as st
+
+    # Example usage with columns and st.metric
+    col1, col2, col3= st.columns(3)
+
+    # Wrap each st.metric call with a container div
+    with col1:
+        num_of_apps = len(df)
+        st.metric(label='Total Number of Apps', value="{:,}".format(num_of_apps))
+
+        free_apps_count = df[df['Type'] == 'Free'].shape[0]   
+        st.metric(label= 'Number of Free Apps',value = free_apps_count)
+
+    with col2:
+        st.metric(label='Number of Categories', value="33")
+
+        paid_apps_count = df[df['Type'] == 'Paid'].shape[0]
+        st.metric(label= 'Number of Paid Apps',value = paid_apps_count)
+
+    with col3:
+        total_installs = df['Installs'].sum()   
+        st.metric(label='Total Number of Installs', value = "{:,}".format(total_installs))
+    
+        
+        
     st.subheader('Statistics by Category')
     cat_df.index += 1
     st.write(cat_df)
-    
+
+    st.write('Overview of Reviews')
+    rev_df.index += 1
+    st.write(rev_df)
 elif tab_selection == 'Comparison between Categories':
     st.title("Comparison between Categories")
-    tab1, tab2, tab3,tab4 , tab5 = st.tabs(["Pie", "Bubble", "Box", "Scatter", "Bar"])
-    with tab1:
+    st.markdown(
+        """
+        <style>
+        /* Target the tab buttons */
+    .stTabs [data-baseweb="tab"] {
+            padding: 30px; 
+        }
+
+        /* Target the text inside the tab buttons */
+    .stTabs [data-baseweb="tab"].st-bt {
+            font-size: 50px; 
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+    tab = st.tabs(["Pie", "Bubble", "Box", "Scatter", "Bar"])
+    with tab[0]:
         st.markdown('<h2 style="font-size:24px;"> Distribution of Content Rating by Installs across Categories </h2>',unsafe_allow_html=True )
         init_slider('a')
          # Access the slider value
         current_slider_value = st.session_state.slider_value
         piechart(df, current_slider_value)
-    with tab2:
+    with tab[1]:
         st.markdown('<h2 style="font-size:24px;"> Average Price, Rating, and Total Installs per Category </h2>',unsafe_allow_html=True )
         bubble_plot(cat_df)
-    with tab3:
+    with tab[2]:
         box_plot(df)
-    with tab4:
+    with tab[3]:
         mv.plot_multivariate(df)
-        
-    with tab5:
+    with tab[4]:
         init_slider('b')
         top_n = st.session_state.slider_value
         cr.top_n_barchart_2(df,top_n)
-
-elif tab_selection == 'Rating vs Sentiment Analysis':
+elif tab_selection == 'Sentiment Analysis':
     sc.scatter_plot(df,rev_df)
     wc.plot_word_cloud(rev_df)
-
-
 elif tab_selection == 'Reviews':
     rv.rev_plot(rev_df)
 elif tab_selection == 'Summary':
