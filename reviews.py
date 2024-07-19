@@ -26,7 +26,7 @@ def rev_plot(data):
     most_neutrals = neutrals.nlargest(3, "Percentage")
 
     # Display the results
-    st.write("Top 3 apps with the highest percentage of:")
+    st.markdown('<h2 style="font-size:24px;"> Top 3 apps with the highest percentage of: </h2>',unsafe_allow_html=True )
     col1, col2, col3 = st.columns(3)
     with col1:
         st.write("Positives:")
@@ -40,7 +40,7 @@ def rev_plot(data):
         st.write("Neutrals:")
         for i, row in most_neutrals.iterrows():
             st.write(f"    - {row['App']} ({int(round(row['Percentage']))}%)")
-    st.markdown('<h2 style="font-size:24px;"> Select an Application </h2>',unsafe_allow_html=True )
+    st.markdown('<h2 style="font-size:24px;"> Review of Sentiment Application </h2>',unsafe_allow_html=True )
 
     # Get a list of unique applications
     apps = data["App"].unique()

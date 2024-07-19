@@ -221,6 +221,8 @@ rev_df =  pd.read_csv("googleplaystore_user_reviews.csv")
 df['Installs'] = df['Installs'].str.replace('+','').str.replace(',','')
 df['Installs'] = df['Installs'].astype(int)
 
+df['Content Rating'] = df['Content Rating'].replace('Everyone 10+', 'Everyone')
+
 # format "size"
 df.dropna(inplace=True)
 
@@ -345,8 +347,8 @@ elif tab_selection == 'Sentiment Analysis':
     wc.plot_word_cloud(rev_df)
 elif tab_selection == 'Reviews':
     rv.rev_plot(rev_df)
-elif tab_selection == 'Summary':
-    st.markdown('<h2 style="font-size:24px;"> By Category </h2>',unsafe_allow_html=True )
-    mv.display_results(df)
+#elif tab_selection == 'Summary':
+    #st.markdown('<h2 style="font-size:24px;"> By Category </h2>',unsafe_allow_html=True )
+    #mv.display_results(df)
 
     #heatmap for rating(?)s
