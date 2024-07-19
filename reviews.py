@@ -25,22 +25,33 @@ def rev_plot(data):
     most_negatives = negatives.nlargest(3, "Percentage")
     most_neutrals = neutrals.nlargest(3, "Percentage")
 
-    # Display the results
-    st.markdown('<h2 style="font-size:24px;"> Top 3 apps with the highest percentage of: </h2>',unsafe_allow_html=True )
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.write("Positives:")
-        for i, row in most_positives.iterrows():
-            st.write(f"    - {row['App']} ({int(round(row['Percentage']))}%)")
-    with col2:
-        st.write("Negatives:")
-        for i, row in most_negatives.iterrows():
-            st.write(f"    - {row['App']} ({int(round(row['Percentage']))}%)")
-    with col3:
-        st.write("Neutrals:")
-        for i, row in most_neutrals.iterrows():
-            st.write(f"    - {row['App']} ({int(round(row['Percentage']))}%)")
-    st.markdown('<h2 style="font-size:24px;"> Review of Sentiment Application </h2>',unsafe_allow_html=True )
+    # Display the results in a box with a pink border
+    st.markdown("""
+        <div style="border: 1.5pt solid pink; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+            <h2 style="font-size:24px; text-align: left;">Top 3 apps with the highest percentage of:</h2>
+            <div style="display: flex; justify-content: space-around; text-align: left;">
+                <div style="flex: 1;">
+                    <h3>Positives:</h3>
+                    {}
+                </div>
+                <div style="flex: 1;">
+                    <h3>Negatives:</h3>
+                    {}
+                </div>
+                <div style="flex: 1;">
+                    <h3>Neutrals:</h3>
+                    {}
+                </div>
+            </div>
+            <div style="height: 30px;"></div>
+        </div>
+    """.format(
+        '<br>'.join([f"- {row['App']} ({int(round(row['Percentage']))}%)" for _, row in most_positives.iterrows()]),
+        '<br>'.join([f"- {row['App']} ({int(round(row['Percentage']))}%)" for _, row in most_negatives.iterrows()]),
+        '<br>'.join([f"- {row['App']} ({int(round(row['Percentage']))}%)" for _, row in most_neutrals.iterrows()])
+    ), unsafe_allow_html=True)
+
+    st.markdown('<h2 style="font-size:24px; text-align: left;">Review of Sentiment Application</h2>', unsafe_allow_html=True)
 
     # Get a list of unique applications
     apps = data["App"].unique()
@@ -80,4 +91,6 @@ def rev_plot(data):
     # Display the chart
     st.plotly_chart(fig)
 
-    
+# Example usage (assuming you have a DataFrame named 'data')
+# data = pd.read_csv("path_to_your_csv_file.csv")
+# rev_plot(data)
