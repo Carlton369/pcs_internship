@@ -257,7 +257,7 @@ cat_df.columns = ['Category'] + list(data.keys())
 
 # Create tabs for different visualizations
 
-st.sidebar.image("pcss.png")
+st.sidebar.subheader("PCSS")
 
 tab_selection = st.sidebar.radio(
     'Select Visualization', 
