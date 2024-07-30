@@ -257,7 +257,7 @@ cat_df.columns = ['Category'] + list(data.keys())
 
 # Create tabs for different visualizations
 
-st.sidebar.subheader("PCSS")
+st.sidebar.title("PCSS")
 
 tab_selection = st.sidebar.radio(
     'Select Visualization', 
@@ -265,7 +265,7 @@ tab_selection = st.sidebar.radio(
      'Comparison between Categories',
      'Sentiment Analysis',
      'Reviews',
-     'Summary'])
+     ])
 
 if tab_selection == 'Overview':
     st.subheader('Overview of Data')
@@ -347,8 +347,3 @@ elif tab_selection == 'Sentiment Analysis':
     wc.plot_word_cloud(rev_df)
 elif tab_selection == 'Reviews':
     rv.rev_plot(rev_df)
-#elif tab_selection == 'Summary':
-    #st.markdown('<h2 style="font-size:24px;"> By Category </h2>',unsafe_allow_html=True )
-    #mv.display_results(df)
-
-    #heatmap for rating(?)s
